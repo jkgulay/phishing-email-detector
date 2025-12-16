@@ -1,0 +1,30 @@
+============================================================
+PHISHING EMAIL CLASSIFIER - EVALUATION RESULTS
+============================================================
+
+Model: Random Forest Classifier (100 estimators)
+Training Set Size: 57740 samples
+Test Set Size: 24746 samples
+Features: 5000 (TF-IDF)
+
+PERFORMANCE METRICS:
+------------------------------------------------------------
+Accuracy:           98.52%
+Precision:          0.9856
+Recall:             0.9859
+F1-Score:           0.9858
+ROC AUC Score:      0.9983
+Average Precision:  0.9982
+
+CLASSIFICATION REPORT:
+------------------------------------------------------------
+              precision    recall  f1-score   support
+
+        Safe       0.98      0.98      0.98     11889
+    Phishing       0.99      0.99      0.99     12857
+
+    accuracy                           0.99     24746
+   macro avg       0.99      0.99      0.99     24746
+weighted avg       0.99      0.99      0.99     24746
+
+============================================================
