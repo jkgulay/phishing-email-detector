@@ -449,8 +449,8 @@ import { ref } from "vue";
 import axios from "axios";
 
 // Replace with your Render backend URL after deployment
-const API_BASE_URL = import.meta.env.PROD 
-  ? "https://phishing-email-detector-befj.onrender.com" 
+const API_BASE_URL = import.meta.env.PROD
+  ? "https://phishing-email-detector-befj.onrender.com"
   : "/api";
 
 const emailText = ref("");
