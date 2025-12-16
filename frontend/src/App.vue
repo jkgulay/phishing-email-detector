@@ -448,10 +448,7 @@ Example: 'URGENT: Your account has been compromised. Click here immediately to s
 import { ref } from "vue";
 import axios from "axios";
 
-// Replace with your Render backend URL after deployment
-const API_BASE_URL = import.meta.env.PROD
-  ? "https://phishing-email-detector-befj.onrender.com"
-  : "/api";
+const API_BASE_URL = "/api";
 
 const emailText = ref("");
 const loading = ref(false);
