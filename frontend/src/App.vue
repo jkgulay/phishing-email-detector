@@ -211,12 +211,24 @@ Example: 'URGENT: Your account has been compromised. Click here immediately to s
                         DETECTION RESULT
                       </div>
                       <div
-                        class="text-h5 text-md-h4 font-weight-bold result-title"
+                        class="text-h5 text-md-h4 font-weight-bold result-title d-flex align-center"
                       >
+                        <v-icon
+                          :icon="
+                            predictionResult.is_phishing
+                              ? 'mdi-alert'
+                              : 'mdi-check-circle'
+                          "
+                          :color="
+                            predictionResult.is_phishing ? '#dc3545' : '#28a745'
+                          "
+                          size="32"
+                          class="mr-2"
+                        ></v-icon>
                         {{
                           predictionResult.is_phishing
-                            ? "⚠️ Phishing Detected"
-                            : "✅ Email is Safe"
+                            ? "Phishing Detected"
+                            : "Email is Safe"
                         }}
                       </div>
                     </v-col>
@@ -465,16 +477,16 @@ const stats = [
     icon: "mdi-shield-check",
     value: "98.52%",
     label: "Accuracy",
-    color: "#28a745",
+    color: "#213448",
   },
-  { icon: "mdi-clock-fast", value: "<1s", label: "Response", color: "#547792" },
+  { icon: "mdi-clock-fast", value: "<1s", label: "Response", color: "#213448" },
   {
     icon: "mdi-email-multiple",
     value: "10K+",
     label: "Analyzed",
     color: "#213448",
   },
-  { icon: "mdi-brain", value: "AI", label: "Powered", color: "#94B4C1" },
+  { icon: "mdi-brain", value: "AI", label: "Powered", color: "#213448" },
 ];
 
 const examplePhishingEmail = `URGENT: Your account is suspended. Click here to verify: http://bit.ly/fake
