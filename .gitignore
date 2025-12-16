@@ -43,3 +43,6 @@ Thumbs.db
 # History
 .history/
 *.history
+
+# Large CSV data files
+data/*.csv
