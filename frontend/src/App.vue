@@ -176,9 +176,12 @@ Example: 'URGENT: Your account has been compromised. Click here immediately to s
             <v-card
               class="result-card mb-6"
               elevation="0"
-              :class="
-                predictionResult.is_phishing ? 'phishing-result' : 'safe-result'
-              "
+              :class="{
+                'danger-result': getThreatLevel(predictionResult) === 'danger',
+                'uncertain-result':
+                  getThreatLevel(predictionResult) === 'uncertain',
+                'safe-result': getThreatLevel(predictionResult) === 'safe',
+              }"
             >
               <v-card-text class="pa-4 pa-md-6">
                 <!-- Result Header -->
@@ -187,16 +190,14 @@ Example: 'URGENT: Your account has been compromised. Click here immediately to s
                     <v-col cols="auto">
                       <v-avatar
                         :color="
-                          predictionResult.is_phishing ? '#dc3545' : '#28a745'
+                          getThreatColor(getThreatLevel(predictionResult))
                         "
                         size="56"
                         class="result-icon"
                       >
                         <v-icon
                           :icon="
-                            predictionResult.is_phishing
-                              ? 'mdi-alert-octagon'
-                              : 'mdi-shield-check'
+                            getThreatIcon(getThreatLevel(predictionResult))
                           "
                           size="32"
                           color="white"
@@ -215,21 +216,15 @@ Example: 'URGENT: Your account has been compromised. Click here immediately to s
                       >
                         <v-icon
                           :icon="
-                            predictionResult.is_phishing
-                              ? 'mdi-alert'
-                              : 'mdi-check-circle'
+                            getThreatIcon(getThreatLevel(predictionResult))
                           "
                           :color="
-                            predictionResult.is_phishing ? '#dc3545' : '#28a745'
+                            getThreatColor(getThreatLevel(predictionResult))
                           "
                           size="32"
                           class="mr-2"
                         ></v-icon>
-                        {{
-                          predictionResult.is_phishing
-                            ? "Phishing Detected"
-                            : "Email is Safe"
-                        }}
+                        {{ getThreatTitle(getThreatLevel(predictionResult)) }}
                       </div>
                     </v-col>
                   </v-row>
@@ -237,26 +232,18 @@ Example: 'URGENT: Your account has been compromised. Click here immediately to s
 
                 <!-- Status Message -->
                 <v-alert
-                  :color="predictionResult.is_phishing ? '#dc3545' : '#28a745'"
+                  :color="getThreatColor(getThreatLevel(predictionResult))"
                   variant="tonal"
                   class="mb-5"
                   density="comfortable"
                 >
                   <template v-slot:prepend>
                     <v-icon
-                      :icon="
-                        predictionResult.is_phishing
-                          ? 'mdi-alert'
-                          : 'mdi-check-circle'
-                      "
+                      :icon="getThreatIcon(getThreatLevel(predictionResult))"
                     ></v-icon>
                   </template>
                   <div class="font-weight-medium">
-                    {{
-                      predictionResult.is_phishing
-                        ? "This email contains suspicious patterns. Do not click any links or provide personal information."
-                        : "No malicious patterns detected. This email appears to be legitimate."
-                    }}
+                    {{ getThreatMessage(getThreatLevel(predictionResult)) }}
                   </div>
                 </v-alert>
 
@@ -678,6 +665,77 @@ const resetAnalysis = () => {
   aiAnalysis.value = null;
   error.value = null;
 };
+
+// Determine threat level based on confidence scores
+const getThreatLevel = (result) => {
+  if (!result) return null;
+
+  const phishingScore = result.confidence.phishing;
+  const safeScore = result.confidence.safe;
+
+  // If scores are close (within 20% difference), it's uncertain
+  const scoreDiff = Math.abs(phishingScore - safeScore);
+
+  if (scoreDiff < 20) {
+    return "uncertain"; // Potential phishing
+  } else if (result.is_phishing) {
+    return "danger"; // Confirmed phishing
+  } else {
+    return "safe"; // Confirmed safe
+  }
+};
+
+const getThreatColor = (level) => {
+  switch (level) {
+    case "danger":
+      return "#dc3545";
+    case "uncertain":
+      return "#ff9800";
+    case "safe":
+      return "#28a745";
+    default:
+      return "#6c757d";
+  }
+};
+
+const getThreatIcon = (level) => {
+  switch (level) {
+    case "danger":
+      return "mdi-alert-octagon";
+    case "uncertain":
+      return "mdi-alert";
+    case "safe":
+      return "mdi-shield-check";
+    default:
+      return "mdi-help-circle";
+  }
+};
+
+const getThreatTitle = (level) => {
+  switch (level) {
+    case "danger":
+      return "Phishing Detected";
+    case "uncertain":
+      return "Potential Phishing";
+    case "safe":
+      return "Email is Safe";
+    default:
+      return "Unknown";
+  }
+};
+
+const getThreatMessage = (level) => {
+  switch (level) {
+    case "danger":
+      return "This email contains suspicious patterns. Do not click any links or provide personal information.";
+    case "uncertain":
+      return "This email shows some suspicious characteristics. Exercise caution and verify the sender before taking any action.";
+    case "safe":
+      return "No malicious patterns detected. This email appears to be legitimate.";
+    default:
+      return "Unable to determine threat level.";
+  }
+};
 </script>
 
 <style scoped>
@@ -853,8 +911,12 @@ const resetAnalysis = () => {
   border: 1px solid rgba(84, 119, 146, 0.15);
 }
 
-.phishing-result {
+.danger-result {
   border-top: 4px solid #dc3545;
+}
+
+.uncertain-result {
+  border-top: 4px solid #ff9800;
 }
 
 .safe-result {
